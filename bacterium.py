@@ -57,7 +57,9 @@ class grid:
     def run_step(self):
         for bact in self.bacterium_list:
             bact.move(self.a, self.b)
-            print(bact.reproduction())
+            if bact.reproduction()==1:
+                bact_reproducted=bacterium(0,"good", bact.x, bact.y)
+                self.bacterium_list.append(bact_reproducted)
     
     def position(self):
         for bact in self.bacterium_list:
