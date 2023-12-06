@@ -22,7 +22,12 @@ class bacterium:
             self.x=self.x-1 
 
     def reproduction(self):
-        pass
+        probability=0.2
+        if random.random()<probability:
+            return 1
+        else:
+            return 0
+
 
     def lifecycle(self):
         pass
@@ -52,6 +57,7 @@ class grid:
     def run_step(self):
         for bact in self.bacterium_list:
             bact.move(self.a, self.b)
+            print(bact.reproduction())
     
     def position(self):
         for bact in self.bacterium_list:
