@@ -1,7 +1,7 @@
 
 import random
 
-class bacterium:
+class rat:
     def __init__(self, health, x, y, age=0): 
         self.age=age
         self.health=health
@@ -9,17 +9,18 @@ class bacterium:
         self.y=y
         # how to take random health
 
-    def move(self, a,b):
+    def move(self, a,b, allowed_moves=[0,1,2,3]):
         los=random.randint(0,4)
-
-        if los==0 and self.y<b:
-            self.y=self.y+1
-        if los==1 and self.y>0:
-            self.y=self.y-1
-        if los==2 and self.x<a:
-            self.x=self.x+1
-        if los==3 and self.x>0:
-            self.x=self.x-1 
+        if los in allowed_moves:
+            if los==0 and self.y<b:
+                self.y=self.y+1
+            if los==1 and self.y>0:
+                self.y=self.y-1
+            if los==2 and self.x<a:
+                self.x=self.x+1
+            if los==3 and self.x>0:
+                self.x=self.x-1 
+        
 
     def reproduction(self):
         probability=min(0.3,1-self.age/12)
@@ -30,7 +31,7 @@ class bacterium:
 
 
     def die(self):
-        probability=min(1,self.age/25)
+        probability=min(1,self.age/10)
         if random.random()<probability:
             return 1
         else:
@@ -51,34 +52,48 @@ class grid:
         self.a=a
         self.b=b
         
-    def add(self, bacteria):
-        grid.storage.append(bacteria)
+    def add(self, rats):
+        grid.storage.append(rats)
     
-    # initialize bacterium
+    # initialize rat
     def initialize(self):
         num=random.randint(1,5)
-        self.bacterium_list=[]
+        self.rat_list=[]
         for i in range(num):
-            bact=bacterium("good", random.randint(0,self.a), random.randint(0, self.b))
-            self.bacterium_list.append(bact)
+            ra=rat("good", random.randint(0,self.a), random.randint(0, self.b))
+            self.rat_list.append(ra)
             
     def run_step(self):
-        bacterium_to_die=[]
-        for i, bact in enumerate(self.bacterium_list):
-            bact.update_age()
-            bact.move(self.a, self.b)
-            if bact.reproduction()==1:
-                bact_reproducted=bacterium("good", bact.x, bact.y)
-                self.bacterium_list.append(bact_reproducted)
-            if bact.die()==1:
-                bacterium_to_die.append(i)
+        rat_to_die=[]
+        for i, ra in enumerate(self.rat_list):
+            ra.update_age()
+            rat_positions=[]
+            for ra_x_y in self.rat_list:
+                rat_positions.append(ra_x_y.place())
+            ra.move(self.a, self.b)
+            if ra.reproduction()==1:
+                ra_reproducted=rat("good", ra.x, ra.y)
+                self.rat_list.append(ra_reproducted)
+            if ra.die()==1:
+                rat_to_die.append(i)
             
-        for i in sorted(bacterium_to_die, reverse=True):
-            del self.bacterium_list[i]
+        for i in sorted(rat_to_die, reverse=True):
+            del self.rat_list[i]
     
     def position(self):
-        for bact in self.bacterium_list:
-            print(bact.place())
+        for rat in self.rat_list:
+            print(rat.place())
+
+    def possible_move(self):
+        possible_moves=[]
+        if not self.x==0:
+            possible_moves.append((self.x-1,self.y))
+        if not self.x==a:
+            possible_moves.append((self.x+1, self.y))
+        if not self.y==0:
+            possible_moves.append((self.x, self.y-1))
+        if not self.y==b:
+            possible_moves.append((self.x. self.y+1))
 
     
 # bactery moves randomly, here to incoprporate random module
@@ -88,7 +103,7 @@ Console.initialize()
 print(Console.position())
 for n in range(100):
     Console.run_step()
-    print(len(Console.bacterium_list))
+    print(len(Console.rat_list))
     
 
 # print(Console.position())
