@@ -29,8 +29,12 @@ class bacterium:
             return 0
 
 
-    def lifecycle(self):
-        pass
+    def die(self):
+        probability=0.2
+        if random.random()<probability:
+            return 1
+        else:
+            return 0
 
     def place(self):
         return self.x, self.y
@@ -55,11 +59,16 @@ class grid:
             self.bacterium_list.append(bact)
             
     def run_step(self):
-        for bact in self.bacterium_list:
+        bacterium_to_die=[]
+        for i, bact in enumerate(self.bacterium_list):
             bact.move(self.a, self.b)
             if bact.reproduction()==1:
                 bact_reproducted=bacterium(0,"good", bact.x, bact.y)
                 self.bacterium_list.append(bact_reproducted)
+            if bact.die()==1:
+                bacterium_to_die.append(i)
+        for i in sorted(bacterium_to_die, reverse=True):
+            del self.bacterium_list[i]
     
     def position(self):
         for bact in self.bacterium_list:
@@ -71,7 +80,8 @@ class grid:
 Console=grid()
 Console.initialize()
 print(Console.position())
-for n in range(10):
+for n in range(100):
     Console.run_step()
+    print(len(Console.bacterium_list))
 
-print(Console.position())
+# print(Console.position())
