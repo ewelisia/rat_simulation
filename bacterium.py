@@ -2,7 +2,7 @@
 import random
 
 class bacterium:
-    def __init__(self, age, health, x, y): 
+    def __init__(self, health, x, y, age=0): 
         self.age=age
         self.health=health
         self.x=x
@@ -22,7 +22,7 @@ class bacterium:
             self.x=self.x-1 
 
     def reproduction(self):
-        probability=0.2
+        probability=min(0.3,1-self.age/12)
         if random.random()<probability:
             return 1
         else:
@@ -30,7 +30,7 @@ class bacterium:
 
 
     def die(self):
-        probability=0.2
+        probability=min(1,self.age/25)
         if random.random()<probability:
             return 1
         else:
@@ -38,6 +38,10 @@ class bacterium:
 
     def place(self):
         return self.x, self.y
+    
+    def update_age(self):
+        self.age=self.age+1
+        
 
 # grid has to have list which storages bacterias, wszystkim zarzadza grid który maw sobie bakterie i okresla jej połozenie
 class grid:
@@ -55,18 +59,20 @@ class grid:
         num=random.randint(1,5)
         self.bacterium_list=[]
         for i in range(num):
-            bact=bacterium(20, "good", random.randint(0,self.a), random.randint(0, self.b))
+            bact=bacterium("good", random.randint(0,self.a), random.randint(0, self.b))
             self.bacterium_list.append(bact)
             
     def run_step(self):
         bacterium_to_die=[]
         for i, bact in enumerate(self.bacterium_list):
+            bact.update_age()
             bact.move(self.a, self.b)
             if bact.reproduction()==1:
-                bact_reproducted=bacterium(0,"good", bact.x, bact.y)
+                bact_reproducted=bacterium("good", bact.x, bact.y)
                 self.bacterium_list.append(bact_reproducted)
             if bact.die()==1:
                 bacterium_to_die.append(i)
+            
         for i in sorted(bacterium_to_die, reverse=True):
             del self.bacterium_list[i]
     
@@ -83,5 +89,6 @@ print(Console.position())
 for n in range(100):
     Console.run_step()
     print(len(Console.bacterium_list))
+    
 
 # print(Console.position())
