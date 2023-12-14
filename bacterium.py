@@ -9,16 +9,20 @@ class rat:
         self.y=y
         # how to take random health
 
-    def move(self, a,b, allowed_moves=[0,1,2,3]):
+    def move(self, a,b, allowed_moves):
         los=random.randint(0,4)
-        if los in allowed_moves:
-            if los==0 and self.y<b:
-                self.y=self.y+1
-            if los==1 and self.y>0:
+        if los==0 and self.y<b:
+            if (self.x, self.y+1) in allowed_moves:
+                self.y = self.y+1
+        if los==1 and self.y>0:
+            if (self.x, self.y-1) in allowed_moves:
                 self.y=self.y-1
-            if los==2 and self.x<a:
+            # to do
+        if los==2 and self.x<a:
+            if (self.x+1, self.y) in allowed_moves:
                 self.x=self.x+1
-            if los==3 and self.x>0:
+        if los==3 and self.x>0:
+            if (self.x-1, self.y) in allowed_moves:
                 self.x=self.x-1 
         
 
@@ -70,7 +74,14 @@ class grid:
             rat_positions=[]
             for ra_x_y in self.rat_list:
                 rat_positions.append(ra_x_y.place())
-            ra.move(self.a, self.b)
+            pos_moves = self.possible_move(ra.x, ra.y)
+            pos_moves_rat = []
+            for move in pos_moves:
+                if move not in rat_positions:
+                    pos_moves_rat.append(move)
+# iterate through all rat_positions
+#
+            ra.move(self.a, self.b, pos_moves_rat)
             if ra.reproduction()==1:
                 ra_reproducted=rat("good", ra.x, ra.y)
                 self.rat_list.append(ra_reproducted)
@@ -84,16 +95,19 @@ class grid:
         for rat in self.rat_list:
             print(rat.place())
 
-    def possible_move(self):
+    def possible_move(self, x, y):
         possible_moves=[]
-        if not self.x==0:
-            possible_moves.append((self.x-1,self.y))
-        if not self.x==a:
-            possible_moves.append((self.x+1, self.y))
-        if not self.y==0:
-            possible_moves.append((self.x, self.y-1))
-        if not self.y==b:
-            possible_moves.append((self.x. self.y+1))
+        if not x==0:
+            possible_moves.append((x-1, y))
+        if not x==self.a:
+            possible_moves.append((x+1, y))
+        if not y==0:
+            possible_moves.append((x, y-1))
+        if not y==self.b:
+            possible_moves.append((x, y+1))
+        return possible_moves
+
+        
 
     
 # bactery moves randomly, here to incoprporate random module
