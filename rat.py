@@ -1,4 +1,8 @@
 import random
+import matplotlib
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 class Rat:
     """
@@ -98,10 +102,16 @@ class Grid:
         """
         Initializes the grid with a random number of rats.
         """
-        num = random.randint(1, 5)
+        num = random.randint(5, 15)
         for _ in range(num):
             new_rat = Rat("good", random.randint(0, self.a), random.randint(0, self.b))
             self.add(new_rat)
+
+    def define_possible_moves(self, rat):
+        rat_positions = [other_rat.place() for other_rat in self.rat_list]
+        pos_moves = self.possible_move(rat.x, rat.y)
+        pos_moves_rat = [move for move in pos_moves if move not in rat_positions]
+        return pos_moves_rat
 
     def run_step(self):
         """
@@ -110,14 +120,14 @@ class Grid:
         rat_to_die = []
         for i, rat in enumerate(self.rat_list):
             rat.update_age()
-            rat_positions = [other_rat.place() for other_rat in self.rat_list]
-            pos_moves = self.possible_move(rat.x, rat.y)
-            pos_moves_rat = [move for move in pos_moves if move not in rat_positions]
+            pos_moves_rat = self.define_possible_moves(rat)
             rat.move(self.a, self.b, pos_moves_rat)
 
             if rat.reproduction() == 1:
-                new_rat = Rat("good", rat.x, rat.y)
-                self.add(new_rat)
+                reproducted_rat_location=self.define_possible_moves(rat)
+                if len(reproducted_rat_location)>0:
+                    new_rat = Rat("good", pos_moves_rat[0][0], pos_moves_rat[0][1])
+                    self.add(new_rat)
 
             if rat.die() == 1:
                 rat_to_die.append(i)
@@ -139,21 +149,71 @@ class Grid:
         :return: List of possible moves.
         """
         possible_moves = []
-        if x == 0:
+        if x != 0:
             possible_moves.append((x - 1, y))
-        if x == self.a:
+        if x != self.a:
             possible_moves.append((x + 1, y))
-        if y == 0:
+        if y != 0:
             possible_moves.append((x, y - 1))
-        if y == self.b:
+        if y != self.b:
             possible_moves.append((x, y + 1))
         return possible_moves
+    
+    def display_rats(self, i):
+        rat_positions=[other_rat.place() for other_rat in self.rat_list]
+        print("ratpositions", rat_positions)
+        print(self.a)
+        print(self.b)
+        grid=np.zeros((21, 21))
+        # grid=np.zeros(self.a, self.b)
+
+        for x, y in rat_positions:
+            grid[x,y]+=1
+
+        plt.imshow(grid, cmap='hot', interpolation='nearest')
+        plt.title("Rat Position Heatmap")
+        plt.xlabel("X Coordinate")
+        plt.ylabel("Y Coordinate")
+        plt.colorbar(label='Number of Rats')
+        plt.savefig(f'heatmap_{i}')
+        plt.close()
+
+
+# def create_heatmap(rat_coords, grid_size):
+#     """
+#     Create a heatmap based on the positions of rats on a grid.
+
+#     :param rat_coords: List of tuples representing the coordinates of rats on the grid.
+#     :param grid_size: Tuple representing the size of the grid (rows, columns).
+#     :return: None, displays a heatmap.
+#     """
+#     # Initialize an empty grid
+#     grid = np.zeros(grid_size)
+
+#     # Increment grid cells based on rat positions
+#     for x, y in rat_coords:
+#         grid[x, y] += 1
+
+#     # Plot the heatmap
+#     plt.imshow(grid, cmap='hot', interpolation='nearest')
+#     plt.title("Rat Position Heatmap")
+#     plt.xlabel("X Coordinate")
+#     plt.ylabel("Y Coordinate")
+#     plt.colorbar(label='Number of Rats')
+#     plt.show()
+
+# # Example usage:
+# rat_positions = [(1, 2), (2, 3), (1, 2), (2, 3), (1, 1)]  # Example rat coordinates
+# grid_dimensions = (5, 5)  # Example grid size
+
+# create_heatmap(rat_positions, grid_dimensions)
 
 
 # Main simulation
 grid_console = Grid()
 grid_console.initialize()
 print(grid_console.position())
-for n in range(100):
+for n in range(3):
     grid_console.run_step()
+    grid_console.display_rats(n)
     print(len(grid_console.rat_list))
