@@ -103,9 +103,15 @@ class Grid:
         Initializes the grid with a random number of rats.
         """
         num = random.randint(5, 15)
+        positions=[]
+        
         for _ in range(num):
-            new_rat = Rat("good", random.randint(0, self.a), random.randint(0, self.b))
-            self.add(new_rat)
+            x=random.randint(0, self.a)
+            y=random.randint(0, self.b)
+            if (x,y) not in positions:
+                new_rat = Rat("good", x, y, age=random.randint(0,10))
+                self.add(new_rat)
+                positions.append((x,y))
 
     def define_possible_moves(self, rat):
         rat_positions = [other_rat.place() for other_rat in self.rat_list]
@@ -213,7 +219,7 @@ class Grid:
 grid_console = Grid()
 grid_console.initialize()
 print(grid_console.position())
-for n in range(3):
+for n in range(10):
     grid_console.run_step()
     grid_console.display_rats(n)
     print(len(grid_console.rat_list))
