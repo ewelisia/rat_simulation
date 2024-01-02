@@ -9,7 +9,7 @@ class Rat:
     Represents a rat with health, position, age, and ability to move, reproduce, and die.
     """
 
-    def __init__(self, health, x, y, age=0, eat_pace=10, has_food=True):
+    def __init__(self, health, x, y, age=0, eat_pace=5, has_food=True):
         """
         Initializes a new rat with specified health, x and y coordinates, and age.
 
@@ -66,6 +66,7 @@ class Rat:
         """
         probability = min(1, self.age / 10)
         if not self.has_food:
+            print("Died due to lack of food.")
             return 1
         return 1 if random.random() < probability else 0
     
@@ -87,7 +88,7 @@ class Rat:
         if self.eat_pace<food_amount:
             return food_amount-self.eat_pace
         else:
-            self.has_food==False
+            self.has_food=False
             return 0 
         
 
@@ -207,34 +208,6 @@ class Grid:
         plt.close()
 
 
-# def create_heatmap(rat_coords, grid_size):
-#     """
-#     Create a heatmap based on the positions of rats on a grid.
-
-#     :param rat_coords: List of tuples representing the coordinates of rats on the grid.
-#     :param grid_size: Tuple representing the size of the grid (rows, columns).
-#     :return: None, displays a heatmap.
-#     """
-#     # Initialize an empty grid
-#     grid = np.zeros(grid_size)
-
-#     # Increment grid cells based on rat positions
-#     for x, y in rat_coords:
-#         grid[x, y] += 1
-
-#     # Plot the heatmap
-#     plt.imshow(grid, cmap='hot', interpolation='nearest')
-#     plt.title("Rat Position Heatmap")
-#     plt.xlabel("X Coordinate")
-#     plt.ylabel("Y Coordinate")
-#     plt.colorbar(label='Number of Rats')
-#     plt.show()
-
-# # Example usage:
-# rat_positions = [(1, 2), (2, 3), (1, 2), (2, 3), (1, 1)]  # Example rat coordinates
-# grid_dimensions = (5, 5)  # Example grid size
-
-# create_heatmap(rat_positions, grid_dimensions)
 
 
 # Main simulation
